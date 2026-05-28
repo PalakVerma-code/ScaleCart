@@ -5,7 +5,9 @@ import cookieParser from 'cookie-parser';
 import productRoutes from './routes/productRoutes.js';
 import authRoutes from './routes/authroutes.js';
 import uploadRoutes from './routes/uploadRoute.js';
+import orderRoutes from './routes/orderRoute.js';
 import redisClient from './config/redis.js';
+
 connectDB();
 dotenv.config();
 const app=express();
@@ -18,6 +20,9 @@ app.use(cookieParser());//allow us to parse cookies in request //for authenticat
 app.use('/api/auth',authRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/products',productRoutes);//use product routes for all routes starting with /api/products
+app.use('/api/orders',orderRoutes);//use order routes for all routes starting with /api/orders
+
+//error handling middleware
 app.listen(port,()=>{
     console.log(`Server is running on port ${port}`);
 })

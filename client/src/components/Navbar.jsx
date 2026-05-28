@@ -23,7 +23,7 @@ const Navbar=()=>{
       <Link to="/cart" className="flex items-center gap-2">
         🛒 Cart
         <span className="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">
-          {cartItems.length}
+          {cartItems.reduce((total,item)=>total+(item.quantity||1),0)} 
         </span>
       </Link>
        {userInfo ? (

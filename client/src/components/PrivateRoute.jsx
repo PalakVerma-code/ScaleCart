@@ -4,9 +4,9 @@ import {Navigate} from 'react-router-dom';
 import {useSelector} from 'react-redux';
 
 //for logged in user to access protected routes otherwise redirect to login page
-const PrivateRoute=({childern})=>{
+const PrivateRoute=({children})=>{
     const {userInfo}=useSelector((state)=>state.user);//get user state from Redux store
-    return userInfo ? childern : <Navigate to='/login'/>;//if user is authenticated then render childern component otherwise redirect to login page
+    return userInfo ? children : <Navigate to='/login'/>;//if user is authenticated then render children component otherwise redirect to login page
 
 }
 //for admin user to access protected routes otherwise redirect to login page
