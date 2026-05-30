@@ -5,8 +5,9 @@ const API_URL='/api/products';
 //get all products
  const getProducts=async()=>{
     try{
-        const responce=await axios.get(API_URL);
-        return responce.data;//return data from response
+        const response = await axios.get(API_URL);
+        // server returns { products, page, totalPages, totalProducts }
+        return response.data.products || response.data;
     }
     catch(error){
         console.error('Error fetching products:',error);
@@ -26,8 +27,8 @@ const getSingleProduct=async(id)=>{
 }
 const createProduct=async(productData)=>{
     try{
-        const responce =await axios.post(API_URL,productData);
-        return responce.data;//return created product data
+        const response = await axios.post(API_URL,productData);
+        return response.data;//return created product data
     }
     catch(error){
         console.error('Error creating product:',error);
@@ -36,8 +37,8 @@ const createProduct=async(productData)=>{
 }
 const updateProduct=async(id,productdata)=>{
     try{
-        const responce=await axious.put(`${API_URL}/${id}`,productdata);
-        return responce.data;//return updated product data 
+        const response = await axios.put(`${API_URL}/${id}`,productdata);
+        return response.data;//return updated product data 
     }
     catch(error){
         console.error('Error updating product:',error);
@@ -46,8 +47,8 @@ const updateProduct=async(id,productdata)=>{
 }
 const deleteProduct=async(id,productData)=>{
     try{
-        const responce=await axious.delete(`${API_URL}/${id}`,productData);
-        return responce.data;//return deleted product data
+        const response = await axios.delete(`${API_URL}/${id}`,productData);
+        return response.data;//return deleted product data
     }
     catch(error){
         console.error('Error deleting product:',error);

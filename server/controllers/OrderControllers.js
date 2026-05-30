@@ -109,4 +109,40 @@ const updateOrderStatus=async(req,res)=>{
         res.status(400).json({message:error.message});
     }
 }
-export {createOrder,getMyOrders,getOrderById,getAllOrders,updateOrderStatus};
+  //get order stat admin dashboard not implemented yet but can be added later to show order stats like total sales, number of orders, etc. for admin users
+
+  const getOrderStats=async(req,res)=>{
+    try{
+        const totalOrders=await Order.countDocuments();//get total number of orders
+        //sum of revenue from all orders by summing totalAmount field of all orders
+        const totalSales=await Order.aggregate([//get total sales amount by summing totalAmount field of all orders
+            {
+                $group:{
+                    _id:null,
+                    totalRevenue:{$sum:'$totalAmount'}
+                }
+            }
+        ]);
+        const totalRevenue=totalSales[0]?.totalRevenue || 0;//get total revenue from aggregation result
+        const ordersByStatus=await Order.aggregate([//get number of orders by status by grouping orders by status and counting the number of orders in each group
+            {
+                $group:{
+                    _id:'$status',
+                    count:{$sum:1}
+                }
+            }
+        ]);
+
+        //count total products 
+        const totalProducts=await Product.countDocuments();//get total number of products in database
+        //find low stock of products with stock less than 5
+        const lowStockProducts=await Product.find({stock:{$lt:5}});//get products with stock less than 5 to show in admin dashboard for inventory management
+        
+
+        res.status(200).json({totalOrders,totalRevenue,ordersByStatus,totalProducts,lowStockProducts});
+    }catch(error){
+        res.status(400).json({message:error.message});
+    }
+  }
+
+export {createOrder,getMyOrders,getOrderById,getAllOrders,updateOrderStatus,getOrderStats};

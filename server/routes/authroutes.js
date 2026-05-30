@@ -1,7 +1,7 @@
 //one job--connect url to right controllers functions
 import express from 'express';
 
-import { registerUser, loginUser, logoutUser,getUserProfile,getMe } from '../controllers/authControllers.js';
+import { registerUser, loginUser, logoutUser,getUserProfile,getMe,updateUserProfile } from '../controllers/authControllers.js';
 import { protect } from '../middleware/authMiddleware.js';
 const router=express.Router();
 
@@ -15,4 +15,6 @@ router.post('/logout',logoutUser);
 router.get('/profile',protect,getUserProfile);//protect route to get user profile //only logged in user can access this route
 //route:GET/api/auth/me
 router.get('/me',protect,getMe);//protect route to get current user's profile //only logged in user can access this route
+//route:PUT/api/auth/profile
+router.put('/profile',protect,updateUserProfile);//protect route to update user profile //only logged in user can access this route
 export default router;

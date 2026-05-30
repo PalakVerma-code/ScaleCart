@@ -1,6 +1,6 @@
 //order routes that handle order related requests
 import express from "express";
-import {createOrder,getMyOrders,getOrderById,updateOrderStatus,getAllOrders} from "../controllers/OrderControllers.js";
+import {createOrder,getMyOrders,getOrderById,updateOrderStatus,getAllOrders,getOrderStats} from "../controllers/OrderControllers.js";
 import {protect,admin} from "../middleware/authMiddleware.js";
 
 const router=express.Router();
@@ -20,5 +20,8 @@ router.put("/:id/status",protect,admin,updateOrderStatus);
 //get all orders
 //route:GET/api/orders
 router.get("/",protect,admin,getAllOrders);
+//get order stats for admin dashboard
+//route:GET/api/orders/stats
+router.get("/stats",protect,admin,getOrderStats);
 
 export default router;

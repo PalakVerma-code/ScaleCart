@@ -102,6 +102,7 @@ const getUserProfile=async(req,res)=>{
         res.status(500).json({message:error.message})
     }
 }
+//route:GET/api/auth/me
 const getMe=async(req,res)=>{
     try{
         const user = await User.findById(req.user._id).select('-password')//user attached by auth middleware
@@ -115,4 +116,36 @@ const getMe=async(req,res)=>{
         res.status(500).json({message:error.message})
     }}
 
-export {registerUser,loginUser,logoutUser,getUserProfile,getMe}
+    //update user profile
+    //route:PUT/api/auth/profile
+const updateUserProfile=async(req,res)=>{
+   try{
+    const user=await User.findById(req.user._id);//user attached by auth middleware
+    if(user){
+        user.name=req.body.name||user.name;
+        user.email=req.body.email||user.email;
+        if(req.body.password){
+            if(req.body.password.length<6){
+                return res.status(400).json({message:'Password must be at least 6 characters'})
+            }
+            user.password=req.body.password;//password will be hashed by pre save middleware in user model
+        }
+        const updatedUser=await user.save();
+        res.status(200).json({
+            _id:updatedUser._id,
+            name:updatedUser.name,
+            email:updatedUser.email,
+            role:updatedUser.role,
+        })
+    }else{
+        res.status(404).json({message:'User not found'})
+     }
+        }catch(error){
+            res.status(500).json({message:error.message})
+         }
+    }
+   
+
+
+
+export {registerUser,loginUser,logoutUser,getUserProfile,getMe,updateUserProfile}

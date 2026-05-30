@@ -4,12 +4,47 @@ import invalidateCache from "../utils/invalidateCache.js";//import invalidate ca
 
 //get all products
 //route :GET/api/products
+//route:GET/api/products?page=1&limit=10&search=keyword&category=categoryName 
 
 const getAllProducts=async(req,res)=>{
 try{
-    const products=await Product.find();//fetch all product from database
+    const page=Number(req.query.page) || 1;//get page number from query params or default to 1
+    const limit=Number(req.query.limit) || 10;//get limit from query params or default to 10
+    const keyword=req.query.keyword?{name:{$regex:req.query.keyword,$options:'i'}// // $regex = search pattern, $options: 'i' = case insensitive
+      // so searching "NIKE" also finds "nike", "Nike"
+      }:{}
+      const category=req.query.category?{category:req.query.category}:{}
+      const minPrice=req.query.minPrice?{price:{$gte:Number(req.query.minPrice)}}:{}
+      const maxPrice=req.query.maxPrice?{price:{$lte:Number(req.query.maxPrice)}}:{}
+      const sortBy=req.query.sortBy || 'createdAt';//get sort by field from query params or default to createdAt
+      const order=req.query.order==='asc' ? 1 : -1;//get sort order from query params or default to descending
+      
+  const filter={};//build filter object based on query params
+  if(keyword) {
+    filter.$or[
+        {name:{$regex:req.query.keyword,$options:'i'}}, //search in name
+        {description:{$regex:req.query.keyword,$options:'i'}}
+
+    ]
+  }
+  if(category){
+    filter.category=category;//filter by category
+  }
+  filter.price={$gte:minPrice,$lte:maxPrice};//filter by price range
+  //build dort order
+  const sortOrder=order === 'asc' ? 1 : -1; //1 for ascending, -1 for descending
+  const sortObj={[sortBy]: sortOrder};//build sort object dynamically based on query params
+const count=await Product.countDocuments(filter);//count total products matching the search keyword
+    const products=await Product.find(filter).sort(sortObj).limit(limit).skip((page-1)*limit);//fetch all product from database
     
-    res.status(200).json(products);
+    res.status(200).json({
+        products,
+        page,
+        totalPages: Math.ceil(count / limit),
+        totalProducts: count,
+        keyword,
+        category
+    });
 }catch(error){
     res.status(500).json({message:error.message});
 }
@@ -85,4 +120,14 @@ const deleteProduct=async(req,res)=>{
         res.status(500).json({message:error.message})
     }
 }
-export {getAllProducts,getProductById,createProduct,updateProduct,deleteProduct}
+//route:GET/api/products/categories 
+const getCategories=async(req,res)=>{
+    try{
+        const categories=await Product.distinct('category');//get distinct categories from products collection
+        res.status(200).json(categories);
+    }catch(error){
+        res.status(500).json({message:error.message});
+    }
+}
+
+export {getAllProducts,getProductById,createProduct,updateProduct,deleteProduct,getCategories}

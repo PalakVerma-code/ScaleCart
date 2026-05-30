@@ -12,7 +12,7 @@ const HomePage=()=>{
     const fetchProducts=async()=>{
         try{
             const data=await Productservices.getProducts();//fetch products from backend
-            setProducts(data);
+            setProducts(data||[]);
         }catch(error){
             setError(error.message);
         }finally{

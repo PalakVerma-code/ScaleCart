@@ -22,6 +22,13 @@ const productSchema=new mongoose.Schema({
     image:{
         type:String,
         default:"no-img.png"
+    },
+    category:{
+        type:String,
+        required:true,
+       default:'general',
+       lowercase:true,
+         trim:true
     }
 },{
     timestamps:true
